@@ -22,9 +22,7 @@ async function main() {
 	console.log("DEPLOYING CONTRACTS");
 	console.log("================================================================================");
 
-	const nikosGame = await NikosGame.deploy();
-	await nikosGame.deployed();
-	console.log("NikosGame                     deployed to:>>", nikosGame.address);
+	const nikosGame = await NikosGame.attach("0xB38E718996d2673b888af4d7E6402e85703e6086");
 
 	const telegramMineSweper = await TelegramMineSweper.deploy(nikosGame.address, "1000", "0", "500", accounts[0].address);
 	await telegramMineSweper.deployed();
@@ -33,12 +31,6 @@ async function main() {
 	console.log("==========================================================================");
 	console.log("VERIFY CONTRACTS");
 	console.log("==========================================================================");
-
-	await hre
-		.run("verify:verify", {
-			address: nikosGame.address
-		})
-		.catch(console.log);
 
 	await hre
 		.run("verify:verify", {
