@@ -34,18 +34,7 @@ async function main() {
 	console.log("VERIFY CONTRACTS");
 	console.log("==========================================================================");
 
-	await hre
-		.run("verify:verify", {
-			address: nikosGame.address
-		})
-		.catch(console.log);
-
-	await hre
-		.run("verify:verify", {
-			address: telegramMineSweper.address,
-			constructorArguments: [nikosGame.address, "1000", "0", "500", accounts[0].address]
-		})
-		.catch(console.log);
+	await nikosGame.setRouletteContract(telegramMineSweper.address);
 
 	console.log("================================================================================");
 	console.log("DONE");
@@ -64,6 +53,19 @@ async function main() {
 	};
 
 	await fs.writeFileSync("contracts-verify.json", JSON.stringify(contractVerify));
+
+	await hre
+		.run("verify:verify", {
+			address: nikosGame.address
+		})
+		.catch(console.log);
+
+	await hre
+		.run("verify:verify", {
+			address: telegramMineSweper.address,
+			constructorArguments: [nikosGame.address, "1000", "0", "500", accounts[0].address]
+		})
+		.catch(console.log);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

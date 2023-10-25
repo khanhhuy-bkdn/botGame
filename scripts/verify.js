@@ -26,11 +26,9 @@ async function main() {
 
   await hre
     .run("verify:verify", {
-      address: contracts.telegramRussianRoulette,
-      constructorArguments: ["0xB38E718996d2673b888af4d7E6402e85703e6086",
-        "1000",
-        "900",
-        "100",
+      address: contracts.telegramMineSweper,
+      constructorArguments: ["0x5336ACf74752DbC825B7B6FeB5Ce36550991C7B5",
+        "1000", "0", "500",
         "0xE18a6e52428aa8E7d96B4221247f052c9Fa916c0"
       ]
     })

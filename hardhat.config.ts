@@ -32,6 +32,10 @@ const config: HardhatUserConfig = {
     hardhat: {
       accounts: { count: 20 },
     },
+    goerli: {
+      url: `https://goerli.infura.io/v3/${process.env.INFURA_API_KEY}`,
+      accounts: [process.env.DEPLOY_ACCOUNT!],
+    },
     sepolia: {
       url: `https://sepolia.infura.io/v3/${process.env.INFURA_API_KEY}`,
       accounts: [process.env.DEPLOY_ACCOUNT!],
@@ -48,6 +52,7 @@ const config: HardhatUserConfig = {
   etherscan: {
     apiKey: {
       mainnet: `${process.env.ETHERSCAN_API_KEY}`,
+      goerli: `${process.env.ETHERSCAN_API_KEY}`,
       sepolia: `${process.env.ETHERSCAN_API_KEY}`,
     }
   },

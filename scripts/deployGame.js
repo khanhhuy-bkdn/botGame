@@ -22,15 +22,17 @@ async function main() {
 	console.log("DEPLOYING CONTRACTS");
 	console.log("================================================================================");
 
-	const nikosGame = await NikosGame.attach("0xB38E718996d2673b888af4d7E6402e85703e6086");
+	const nikosGame = await NikosGame.attach("0x5336ACf74752DbC825B7B6FeB5Ce36550991C7B5");
 
-	const telegramMineSweper = await TelegramMineSweper.deploy(nikosGame.address, "1000", "0", "500", accounts[0].address);
+	const telegramMineSweper = await TelegramMineSweper.deploy(nikosGame.address, "1000", "500", "500", accounts[0].address);
 	await telegramMineSweper.deployed();
 	console.log("TelegramMineSweper                     deployed to:>>", telegramMineSweper.address);
 
 	console.log("==========================================================================");
 	console.log("VERIFY CONTRACTS");
 	console.log("==========================================================================");
+
+	await nikosGame.setRouletteContract(telegramMineSweper.address);
 
 	await hre
 		.run("verify:verify", {

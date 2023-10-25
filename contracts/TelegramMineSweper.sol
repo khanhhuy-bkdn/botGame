@@ -41,6 +41,17 @@ contract TelegramMineSweper is Ownable {
     // Stores the amount burned by the protocol.
     event Burn(int64 tgChatId, uint256 amount);
 
+    event NewGame(
+        int64 tgChatId,
+        uint256 size,
+        uint256 minBet,
+        bytes32 hashedMineSweper,
+        address[] players,
+        uint256 betPerUser
+    );
+
+    event EndGame(int64 tgChatId);
+
     constructor(
         address payable _bettingToken,
         uint256 _minimumBet,
@@ -144,6 +155,8 @@ contract TelegramMineSweper is Ownable {
         games[_tgChatId] = g;
         activeTgGroups.push(_tgChatId);
 
+        emit NewGame(_tgChatId, _size, _minBet, _hashedMineSweper, _players, _betPerUser);
+
         return betTotal;
     }
 
@@ -191,8 +204,8 @@ contract TelegramMineSweper is Ownable {
             totalPercent += _percent[i];
             require(_winners[i] < g.players.length, "Winners index out of range");
         }
-        require(totalPercent == 10_0000, "Total fees must be = 100%");
-        require(burnBps + revenueBps < 10_1000, "Total fees must be < 100%");
+        require(totalPercent == 10_000, "Total fees must be = 100%");
+        require(burnBps + revenueBps < 10_000, "Total fees must be < 100%");
 
         uint256 totalPaidWinnings = 0;
         uint256 totalLoseBet = g.betTotal - g.betPerUser * _winners.length;
@@ -221,18 +234,24 @@ contract TelegramMineSweper is Ownable {
             }
         }
 
-        bettingToken.burn(burnShare);
-        emit Burn(_tgChatId, burnShare);
+        if (burnShare > 0) {
+            bettingToken.burn(burnShare);
+            emit Burn(_tgChatId, burnShare);
+        }
 
         uint256 realRevenueShare = totalLoseBet - totalPaidWinnings - burnShare;
-        isSent = bettingToken.transfer(revenueWallet, realRevenueShare);
-        require(isSent, "Revenue transfer failed");
-        emit Revenue(_tgChatId, realRevenueShare);
+        if (realRevenueShare > 0) {
+            isSent = bettingToken.transfer(revenueWallet, realRevenueShare);
+            require(isSent, "Revenue transfer failed");
+            emit Revenue(_tgChatId, realRevenueShare);
+        }
 
         require(
             (totalPaidWinnings + burnShare + realRevenueShare) == totalLoseBet,
             "Calculated winnings do not add up"
         );
+
+        emit EndGame(_tgChatId);
     }
 
     /**
